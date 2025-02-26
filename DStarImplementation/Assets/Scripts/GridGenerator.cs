@@ -4,6 +4,8 @@ using System.IO;
 public class GridGenerator : MonoBehaviour
 {
     [SerializeField]
+    private Transform startPosition;
+    [SerializeField]
     private int width = 10;
     [SerializeField]
     private int height = 10;
@@ -38,7 +40,7 @@ public class GridGenerator : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 char tile = lines[y][x];
-                Vector3 position = new Vector3(x * spacing, y * spacing,0);
+                Vector3 position = startPosition.position + new Vector3(x * spacing, y * spacing,0);
                 GameObject cell = null;
 
                 if (tile == 'W') // Wall
