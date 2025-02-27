@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class PlayerController : MonoBehaviour
 {
     private Vector2Int playerPosition;
@@ -12,7 +13,6 @@ public class PlayerController : MonoBehaviour
         spacing = gridSpacing;
         height = gridHeight;
         playerPosition = new Vector2Int(1, 1);
-        UpdatePlayerPosition();
     }
 
     void Update()
@@ -20,31 +20,21 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-            if (hit)
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, Vector2.zero);
+            if (hit.collider != null)
             {
-                if (hit.collider.CompareTag("Walkable"))
+                GridCell gridCell = hit.collider.GetComponent<GridCell>();
+                if (gridCell != null && gridCell.cellType == CellType.Walkable)
                 {
-                    string[] nameParts = hit.collider.gameObject.name.Split('_');
-                    if (nameParts.Length == 3 && nameParts[0] == "Cell")
-                    {
-                        int x = int.Parse(nameParts[1]);
-                        int y = int.Parse(nameParts[2]);
-                        MovePlayer(x, y);
-                    }
+                    MovePlayer(gridCell);
                 }
             }
         }
     }
 
-    void MovePlayer(int x, int y)
+    void MovePlayer(GridCell targetCell)
     {
-        playerPosition = new Vector2Int(x, y);
-        UpdatePlayerPosition();
-    }
-
-    void UpdatePlayerPosition()
-    {
-        transform.position = new Vector3(playerPosition.x * spacing, playerPosition.y * spacing, 0.0f);
+        playerPosition = targetCell.gridPos;
+        transform.position = targetCell.transform.position; // Use actual cell position
     }
 }
