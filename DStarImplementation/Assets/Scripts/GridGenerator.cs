@@ -41,12 +41,14 @@ public class GridGenerator : MonoBehaviour
         height = lines.Length;
         width = lines[0].Length;
 
+        Vector3 origin = startPosition != null ? startPosition.position : Vector3.zero;
+
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 char tile = lines[y][x];
-                Vector3 position = new Vector3(x * spacing, y * spacing, 0);
+                Vector3 position = origin + new Vector3(x * spacing, y * spacing, 0);
                 GameObject cell = null;
                 CellType cellType = CellType.Wall;
 
