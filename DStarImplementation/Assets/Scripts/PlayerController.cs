@@ -1,18 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private GridManager gridManager;
     private Vector2Int playerPosition;
-    private float spacing;
-    private int height;
 
-    public void SetGridParameters(float gridSpacing, int gridHeight)
+    public void SetGridManager(GridManager manager)
     {
-        spacing = gridSpacing;
-        height = gridHeight;
+        gridManager = manager;
         playerPosition = new Vector2Int(1, 1);
+        PlacePlayerAtStart();
+    }
+
+    void PlacePlayerAtStart()
+    {
+        if (gridManager.IsWalkable(playerPosition))
+        {
+            transform.position = gridManager.GetWorldPosition(playerPosition);
+        }
+        else
+        {
+            Debug.LogError("Starting GridCell (1,1) not found or not walkable!");
+        }
     }
 
     void Update()
@@ -24,17 +33,20 @@ public class PlayerController : MonoBehaviour
             if (hit.collider != null)
             {
                 GridCell gridCell = hit.collider.GetComponent<GridCell>();
-                if (gridCell != null && gridCell.cellType == CellType.Walkable)
+                if (gridCell != null && gridManager.IsWalkable(gridCell.gridPos))
                 {
-                    MovePlayer(gridCell);
+                    MovePlayer(gridCell.gridPos);
                 }
             }
         }
     }
 
-    void MovePlayer(GridCell targetCell)
+    void MovePlayer(Vector2Int newPosition)
     {
-        playerPosition = targetCell.gridPos;
-        transform.position = targetCell.transform.position; // Use actual cell position
+        if (gridManager.IsWalkable(newPosition))
+        {
+            playerPosition = newPosition;
+            transform.position = gridManager.GetWorldPosition(playerPosition);
+        }
     }
 }

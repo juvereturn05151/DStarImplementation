@@ -19,13 +19,23 @@ public class GridGenerator : MonoBehaviour
     private string mapFilePath = "Assets/map.txt";
     [SerializeField]
     private PlayerController playerController;
+    [SerializeField]
+    private GridManager gridManager;
 
     void Start()
     {
+        if (gridManager == null)
+        {
+            Debug.LogError("GridManager not assigned!");
+            return;
+        }
+
+        gridManager.InitializeGrid(startPosition != null ? startPosition.position : Vector3.zero, spacing);
         GenerateGridFromFile();
+
         if (playerController != null)
         {
-            playerController.SetGridParameters(spacing, height);
+            playerController.SetGridManager(gridManager);
         }
     }
 
@@ -41,25 +51,24 @@ public class GridGenerator : MonoBehaviour
         height = lines.Length;
         width = lines[0].Length;
 
-        Vector3 origin = startPosition != null ? startPosition.position : Vector3.zero;
-
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 char tile = lines[y][x];
-                Vector3 position = origin + new Vector3(x * spacing, y * spacing, 0);
+                Vector2Int gridPos = new Vector2Int(x, y);
+                Vector3 position = gridManager.GetWorldPosition(gridPos);
                 GameObject cell = null;
                 CellType cellType = CellType.Wall;
 
                 if (tile == 'W') // Wall
                 {
-                    cell = Instantiate(wallPrefab, position, Quaternion.identity, transform);
+                    cell = Instantiate(wallPrefab, position, Quaternion.identity, gridManager.transform);
                     cell.tag = "Wall";
                 }
                 else if (tile == 'O') // Walkable area
                 {
-                    cell = Instantiate(walkablePrefab, position, Quaternion.identity, transform);
+                    cell = Instantiate(walkablePrefab, position, Quaternion.identity, gridManager.transform);
                     cell.tag = "Walkable";
                     cellType = CellType.Walkable;
                 }
@@ -68,7 +77,8 @@ public class GridGenerator : MonoBehaviour
                 {
                     cell.name = $"Cell_{x}_{y}";
                     GridCell gridCell = cell.AddComponent<GridCell>();
-                    gridCell.Initialize(new Vector2Int(x, y), cellType);
+                    gridCell.Initialize(gridPos, cellType);
+                    gridManager.AddCell(gridPos, gridCell);
                 }
             }
         }
