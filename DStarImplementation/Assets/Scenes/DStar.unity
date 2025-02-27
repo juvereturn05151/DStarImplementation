@@ -364,6 +364,7 @@ MonoBehaviour:
   wallPrefab: {fileID: 1824396636461255585, guid: b42c9596f0279f04ca8d4b44b6fe22aa, type: 3}
   mapFilePath: Assets/map.txt
   playerController: {fileID: 349541461}
+  gridManager: {fileID: 48289534}
 --- !u!4 &654806379
 Transform:
   m_ObjectHideFlags: 0
