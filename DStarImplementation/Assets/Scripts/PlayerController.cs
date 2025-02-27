@@ -1,14 +1,20 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     private GridManager gridManager;
     private Vector2Int playerPosition;
+    private List<Vector2Int> currentPath;
+    private bool isMoving = false;
+    private AStarPathfinder pathfinder;
 
     public void SetGridManager(GridManager manager)
     {
         gridManager = manager;
-        playerPosition = new Vector2Int(1, 1);
+        pathfinder = new AStarPathfinder(gridManager); // Initialize the A* pathfinder
+        playerPosition = new Vector2Int(1, 1); // Default starting position
         PlacePlayerAtStart();
     }
 
@@ -26,7 +32,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !isMoving)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, Vector2.zero);
@@ -35,18 +41,32 @@ public class PlayerController : MonoBehaviour
                 GridCell gridCell = hit.collider.GetComponent<GridCell>();
                 if (gridCell != null && gridManager.IsWalkable(gridCell.gridPos))
                 {
-                    MovePlayer(gridCell.gridPos);
+                    // Calculate path using A*
+                    currentPath = pathfinder.FindPath(playerPosition, gridCell.gridPos);
+                    if (currentPath != null && currentPath.Count > 0)
+                    {
+                        StartCoroutine(MoveAlongPath());
+                    }
                 }
             }
         }
     }
 
-    void MovePlayer(Vector2Int newPosition)
+    private IEnumerator MoveAlongPath()
     {
-        if (gridManager.IsWalkable(newPosition))
+        isMoving = true;
+
+        foreach (Vector2Int step in currentPath)
         {
-            playerPosition = newPosition;
-            transform.position = gridManager.GetWorldPosition(playerPosition);
+            Vector3 targetPosition = gridManager.GetWorldPosition(step);
+            while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, 5f * Time.deltaTime);
+                yield return null;
+            }
+            playerPosition = step; // Update player's grid position
         }
+
+        isMoving = false;
     }
 }
