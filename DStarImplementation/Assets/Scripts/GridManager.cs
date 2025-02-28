@@ -35,4 +35,39 @@ public class GridManager : MonoBehaviour
     {
         return origin + new Vector3(position.x * spacing, position.y * spacing, 0);
     }
+
+    public void SetCellColor(Vector2Int position, Color color)
+    {
+        if (grid.TryGetValue(position, out GridCell cell))
+        {
+            cell.GetComponent<SpriteRenderer>().color = color;
+        }
+    }
+
+    public void ResetCellColors()
+    {
+        foreach (var cell in grid.Values)
+        {
+            if (cell.cellType == CellType.Walkable) 
+            {
+                cell.GetComponent<SpriteRenderer>().color = Color.white; // Reset to default color
+            }
+        }
+    }
+
+    public void DrawPathArrows(List<Vector2Int> path)
+    {
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            Vector2Int current = path[i];
+            Vector2Int next = path[i + 1];
+            Vector3 direction = (GetWorldPosition(next) - GetWorldPosition(current)).normalized;
+            DrawArrow(GetWorldPosition(current), direction);
+        }
+    }
+
+    private void DrawArrow(Vector3 position, Vector3 direction)
+    {
+        Debug.DrawRay(position, direction * 0.5f, Color.green, 2f); // Draw an arrow using Debug.DrawRay
+    }
 }

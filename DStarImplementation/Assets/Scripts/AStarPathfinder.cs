@@ -26,11 +26,17 @@ public class AStarPathfinder
             return null;
         }
 
+        gridManager.ResetCellColors(); // Reset colors after pathfinding
+
         // Initialize start node
         startCell.ResetPathfindingData();
         startCell.gCost = 0;
         startCell.fCost = Heuristic(start, target);
         openList.Add(startCell);
+
+        // Debug: Color the start and target cells
+        gridManager.SetCellColor(start, Color.green); // Start cell
+        gridManager.SetCellColor(target, Color.red); // Target cell
 
         while (openList.Count > 0)
         {
@@ -40,12 +46,17 @@ public class AStarPathfinder
             // If we've reached the target, reconstruct and return the path
             if (currentNode.gridPos == target)
             {
-                return ReconstructPath(currentNode);
+                var path = ReconstructPath(currentNode);
+
+                return path;
             }
 
             // Move the current node from the open list to the closed list
             openList.Remove(currentNode);
             closedList.Add(currentNode.gridPos);
+
+            // Debug: Color the closed list cells yellow
+            gridManager.SetCellColor(currentNode.gridPos, Color.yellow);
 
             // Evaluate each neighbor
             foreach (Vector2Int neighborPos in GetNeighbors(currentNode.gridPos))
@@ -67,6 +78,9 @@ public class AStarPathfinder
                     neighborCell.fCost = tentativeGCost + Heuristic(neighborPos, target);
                     neighborCell.parent = currentNode;
                     openList.Add(neighborCell);
+
+                    // Debug: Color the open list cells blue
+                    gridManager.SetCellColor(neighborPos, Color.blue);
                 }
                 else if (tentativeGCost < neighborCell.gCost)
                 {
@@ -78,7 +92,6 @@ public class AStarPathfinder
             }
         }
 
-        // No path found
         return null;
     }
 
@@ -92,6 +105,9 @@ public class AStarPathfinder
             path.Insert(0, currentNode.gridPos);
             currentNode = currentNode.parent;
         }
+
+        // Debug: Draw arrows along the path
+        gridManager.DrawPathArrows(path);
 
         return path;
     }
