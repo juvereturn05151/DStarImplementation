@@ -55,6 +55,23 @@ public class GridManager : MonoBehaviour
         }
     }
 
+    public void ToggleWall(Vector2Int position)
+    {
+        if (grid.TryGetValue(position, out GridCell cell))
+        {
+            if (cell.cellType == CellType.Walkable)
+            {
+                cell.cellType = CellType.Wall;
+                cell.GetComponent<SpriteRenderer>().color = Color.black; // Visual feedback for wall
+            }
+            else
+            {
+                cell.cellType = CellType.Walkable;
+                cell.GetComponent<SpriteRenderer>().color = Color.white; // Visual feedback for walkable
+            }
+        }
+    }
+
     public void DrawPathArrows(List<Vector2Int> path)
     {
         for (int i = 0; i < path.Count - 1; i++)
