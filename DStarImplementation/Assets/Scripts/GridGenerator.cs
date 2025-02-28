@@ -21,6 +21,8 @@ public class GridGenerator : MonoBehaviour
     private PlayerController playerController;
     [SerializeField]
     private GridManager gridManager;
+    [SerializeField]
+    private WallAdder wallAdder;
 
     void Start()
     {
@@ -36,6 +38,11 @@ public class GridGenerator : MonoBehaviour
         if (playerController != null)
         {
             playerController.SetGridManager(gridManager);
+        }
+
+        if (wallAdder != null)
+        {
+            wallAdder.SetGridManager(gridManager);
         }
     }
 
