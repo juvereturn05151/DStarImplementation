@@ -68,6 +68,6 @@ public class GridManager : MonoBehaviour
 
     private void DrawArrow(Vector3 position, Vector3 direction)
     {
-        Debug.DrawRay(position, direction * 0.5f, Color.green, 2f); // Draw an arrow using Debug.DrawRay
+        Debug.DrawRay(position, direction * 0.5f, Color.red, 2f); // Draw an arrow using Debug.DrawRay
     }
 }
