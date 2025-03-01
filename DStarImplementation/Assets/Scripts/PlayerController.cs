@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+enum PathfindingMode 
+{
+    AStar,
+    DStar
+}
+
 public class PlayerController : MonoBehaviour
 {
     private GridManager gridManager;
@@ -11,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
     private AStarPathfinder pathfinder;
     private Coroutine movementCoroutine;
+    private PathfindingMode pathfindingMode;
 
     public void SetGridManager(GridManager manager)
     {
@@ -18,6 +25,7 @@ public class PlayerController : MonoBehaviour
         pathfinder = new AStarPathfinder(gridManager); // Initialize the A* pathfinder
         playerPosition = new Vector2Int(1, 1); // Default starting position
         PlacePlayerAtStart();
+        pathfindingMode = PathfindingMode.AStar;
     }
 
     void PlacePlayerAtStart()
@@ -58,7 +66,11 @@ public class PlayerController : MonoBehaviour
             StopCoroutine(movementCoroutine); // Stop current movement if a new path is needed
         }
 
-        currentPath = pathfinder.FindPath(playerPosition, goalPosition);
+        if (pathfindingMode == PathfindingMode.AStar) 
+        {
+            currentPath = pathfinder.FindPath(playerPosition, goalPosition);
+        }
+
         if (currentPath != null && currentPath.Count > 0)
         {
             gridManager.DrawPathArrows(currentPath); // Draw updated path arrows
