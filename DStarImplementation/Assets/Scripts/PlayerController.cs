@@ -6,9 +6,11 @@ public class PlayerController : MonoBehaviour
 {
     private GridManager gridManager;
     private Vector2Int playerPosition;
+    private Vector2Int goalPosition;
     private List<Vector2Int> currentPath;
     private bool isMoving = false;
     private AStarPathfinder pathfinder;
+    private Coroutine movementCoroutine;
 
     public void SetGridManager(GridManager manager)
     {
@@ -41,14 +43,26 @@ public class PlayerController : MonoBehaviour
                 GridCell gridCell = hit.collider.GetComponent<GridCell>();
                 if (gridCell != null && gridManager.IsWalkable(gridCell.gridPos))
                 {
-                    // Calculate path using A*
-                    currentPath = pathfinder.FindPath(playerPosition, gridCell.gridPos);
-                    if (currentPath != null && currentPath.Count > 0)
-                    {
-                        StartCoroutine(MoveAlongPath());
-                    }
+                    goalPosition = gridCell.gridPos;
+                    CalculateNewPath();
                 }
             }
+        }
+    }
+
+
+    private void CalculateNewPath()
+    {
+        if (movementCoroutine != null)
+        {
+            StopCoroutine(movementCoroutine); // Stop current movement if a new path is needed
+        }
+
+        currentPath = pathfinder.FindPath(playerPosition, goalPosition);
+        if (currentPath != null && currentPath.Count > 0)
+        {
+            gridManager.DrawPathArrows(currentPath); // Draw updated path arrows
+            movementCoroutine = StartCoroutine(MoveAlongPath());
         }
     }
 
@@ -58,6 +72,13 @@ public class PlayerController : MonoBehaviour
 
         foreach (Vector2Int step in currentPath)
         {
+            if (!gridManager.IsWalkable(step)) // Check if the path is still valid
+            {
+                Debug.Log("Path blocked! Recalculating...");
+                CalculateNewPath();
+                yield break;
+            }
+
             Vector3 targetPosition = gridManager.GetWorldPosition(step);
             while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
             {
