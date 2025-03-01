@@ -4,6 +4,7 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     private Dictionary<Vector2Int, GridCell> grid = new Dictionary<Vector2Int, GridCell>();
+    private HashSet<GridCell> walkableCells = new HashSet<GridCell>();
     private Vector3 origin;
     private float spacing;
 
@@ -18,6 +19,12 @@ public class GridManager : MonoBehaviour
         if (!grid.ContainsKey(position))
         {
             grid[position] = cell;
+
+            // Add to walkableCells if the cell is walkable
+            if (cell.cellType == CellType.Walkable)
+            {
+                walkableCells.Add(cell);
+            }
         }
     }
 
@@ -63,14 +70,49 @@ public class GridManager : MonoBehaviour
             {
                 cell.cellType = CellType.Wall;
                 cell.GetComponent<SpriteRenderer>().color = Color.black; // Visual feedback for wall
+                walkableCells.Remove(cell);
             }
             else
             {
                 cell.cellType = CellType.Walkable;
                 cell.GetComponent<SpriteRenderer>().color = Color.white; // Visual feedback for walkable
+                walkableCells.Add(cell);
             }
         }
     }
+
+    // Return a list of all walkable cells
+    public List<GridCell> GetAllWalkableCells()
+    {
+        return new List<GridCell>(walkableCells); 
+    }
+
+    public List<GridCell> GetNeighbors(Vector2Int position)
+    {
+        List<GridCell> neighbors = new List<GridCell>();
+
+        // Define the 4 possible directions (up, down, left, right)
+        Vector2Int[] directions = new Vector2Int[]
+        {
+            new Vector2Int(0, 1),  // Up
+            new Vector2Int(0, -1), // Down
+            new Vector2Int(-1, 0), // Left
+            new Vector2Int(1, 0)   // Right
+        };
+
+        // Check each direction
+        foreach (var direction in directions)
+        {
+            Vector2Int neighborPos = position + direction;
+            if (grid.TryGetValue(neighborPos, out GridCell neighborCell))
+            {
+                neighbors.Add(neighborCell);
+            }
+        }
+
+        return neighbors;
+    }
+
 
     public void DrawPathArrows(List<Vector2Int> path)
     {

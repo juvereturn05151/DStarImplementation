@@ -31,7 +31,8 @@ public class AStarPathfinder
         // Initialize start node
         startCell.ResetPathfindingData();
         startCell.gCost = 0;
-        startCell.fCost = Heuristic(start, target);
+        startCell.hCost = Heuristic(start, target);
+        startCell.fCost = startCell.gCost + startCell.hCost;
         openList.Add(startCell);
 
         // Debug: Color the start and target cells

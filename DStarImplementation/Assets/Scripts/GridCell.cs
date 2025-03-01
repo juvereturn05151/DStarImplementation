@@ -12,9 +12,13 @@ public class GridCell : MonoBehaviour
     public CellType cellType;
 
     // A* Pathfinding properties
-    public float gCost; // Cost from start to this node
-    public float fCost; // Total cost (gCost + heuristic)
-    public GridCell parent; // Parent node for path reconstruction
+    // Cost from start to this node
+    public float gCost;
+    // Total cost (gCost + heuristic)
+    public float hCost;
+    public float fCost;
+    // Parent node for path reconstruction
+    public GridCell parent; 
 
     public void Initialize(Vector2Int position, CellType type)
     {

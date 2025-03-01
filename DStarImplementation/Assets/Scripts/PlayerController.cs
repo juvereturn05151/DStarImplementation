@@ -10,22 +10,27 @@ enum PathfindingMode
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    private PathfindingMode pathfindingMode;
+
     private GridManager gridManager;
     private Vector2Int playerPosition;
     private Vector2Int goalPosition;
     private List<Vector2Int> currentPath;
     private bool isMoving = false;
-    private AStarPathfinder pathfinder;
+    private AStarPathfinder astarPathfinder;
+    private DStarPathfinder dstarPathfinder;
     private Coroutine movementCoroutine;
-    private PathfindingMode pathfindingMode;
 
     public void SetGridManager(GridManager manager)
     {
         gridManager = manager;
-        pathfinder = new AStarPathfinder(gridManager); // Initialize the A* pathfinder
+        astarPathfinder = new AStarPathfinder(gridManager); // Initialize the A* pathfinder
+        dstarPathfinder = new DStarPathfinder(gridManager);
         playerPosition = new Vector2Int(1, 1); // Default starting position
         PlacePlayerAtStart();
-        pathfindingMode = PathfindingMode.AStar;
+        //pathfindingMode = PathfindingMode.AStar;
+        pathfindingMode = PathfindingMode.DStar;
     }
 
     void PlacePlayerAtStart()
@@ -66,9 +71,13 @@ public class PlayerController : MonoBehaviour
             StopCoroutine(movementCoroutine); // Stop current movement if a new path is needed
         }
 
-        if (pathfindingMode == PathfindingMode.AStar) 
+        if (pathfindingMode == PathfindingMode.AStar)
         {
-            currentPath = pathfinder.FindPath(playerPosition, goalPosition);
+            currentPath = astarPathfinder.FindPath(playerPosition, goalPosition);
+        }
+        else 
+        {
+            currentPath = dstarPathfinder.FindPath(playerPosition, goalPosition);
         }
 
         if (currentPath != null && currentPath.Count > 0)
