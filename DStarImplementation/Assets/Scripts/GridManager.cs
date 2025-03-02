@@ -7,11 +7,17 @@ public class GridManager : MonoBehaviour
     private HashSet<GridCell> walkableCells = new HashSet<GridCell>();
     private Vector3 origin;
     private float spacing;
+    private DStarPathfinder dstarPathfinder;
 
     public void InitializeGrid(Vector3 startPosition, float gridSpacing)
     {
         origin = startPosition;
         spacing = gridSpacing;
+    }
+
+    public void SetDStarPathfinder(DStarPathfinder pathfinder)
+    {
+        dstarPathfinder = pathfinder;
     }
 
     public void AddCell(Vector2Int position, GridCell cell)
@@ -71,12 +77,22 @@ public class GridManager : MonoBehaviour
                 cell.cellType = CellType.Wall;
                 cell.GetComponent<SpriteRenderer>().color = Color.black; // Visual feedback for wall
                 walkableCells.Remove(cell);
+
+                if (dstarPathfinder != null)
+                {
+                    dstarPathfinder.UpdateEdge(position);
+                }
             }
             else
             {
                 cell.cellType = CellType.Walkable;
                 cell.GetComponent<SpriteRenderer>().color = Color.white; // Visual feedback for walkable
                 walkableCells.Add(cell);
+
+                if (dstarPathfinder != null)
+                {
+                    dstarPathfinder.UpdateEdge(position);
+                }
             }
         }
     }

@@ -29,8 +29,10 @@ public class PlayerController : MonoBehaviour
         dstarPathfinder = new DStarPathfinder(gridManager);
         playerPosition = new Vector2Int(1, 1); // Default starting position
         PlacePlayerAtStart();
+
         //pathfindingMode = PathfindingMode.AStar;
         pathfindingMode = PathfindingMode.DStar;
+        gridManager.SetDStarPathfinder(dstarPathfinder);
     }
 
     void PlacePlayerAtStart()
