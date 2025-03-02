@@ -124,12 +124,12 @@ public class PlayerController : MonoBehaviour
 
         foreach (Vector2Int step in currentPath)
         {
-            if (!gridManager.IsWalkable(step)) // Check if the path is still valid
-            {
-                Debug.Log("Path blocked! Recalculating...");
-                CalculateNewPath();
-                yield break;
-            }
+            //if (!gridManager.IsWalkable(step)) // Check if the path is still valid
+            //{
+            //    Debug.Log("Path blocked! Recalculating...");
+            //    CalculateNewPath();
+            //    yield break;
+            //}
 
             Vector3 targetPosition = gridManager.GetWorldPosition(step);
             while (Vector3.Distance(transform.position, targetPosition) > 0.01f)

@@ -86,6 +86,9 @@ public class GridManager : MonoBehaviour
                 {
                     dstarPathfinder.UpdateEdge(position);
                 }
+
+                // Trigger the OnGridChanged event
+                OnGridChanged?.Invoke(position);
             }
             else
             {
