@@ -33,7 +33,20 @@ public class PlayerController : MonoBehaviour
         //pathfindingMode = PathfindingMode.AStar;
         pathfindingMode = PathfindingMode.DStar;
         gridManager.SetDStarPathfinder(dstarPathfinder);
+
+        // Subscribe to grid changes
+        gridManager.OnGridChanged += HandleGridChanged;
     }
+
+    void OnDestroy()
+    {
+        // Unsubscribe from grid changes to avoid memory leaks
+        if (gridManager != null)
+        {
+            gridManager.OnGridChanged -= HandleGridChanged;
+        }
+    }
+
 
     void PlacePlayerAtStart()
     {
@@ -65,6 +78,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void HandleGridChanged(Vector2Int changedPosition)
+    {
+        Debug.Log($"Grid changed at {changedPosition}. Recomputing path...");
+        CalculateNewPath();
+    }
 
     private void CalculateNewPath()
     {

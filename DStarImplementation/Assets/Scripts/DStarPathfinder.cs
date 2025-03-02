@@ -53,6 +53,7 @@ public class DStarPathfinder
         {
             Debug.Log($"Reconstructed path: {string.Join(" -> ", path)}");
         }
+
         return path;
     }
 

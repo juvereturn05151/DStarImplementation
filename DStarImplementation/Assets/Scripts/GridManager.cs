@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
+    // Event to notify when the grid changes
+    public event Action<Vector2Int> OnGridChanged;
+
     private Dictionary<Vector2Int, GridCell> grid = new Dictionary<Vector2Int, GridCell>();
     private HashSet<GridCell> walkableCells = new HashSet<GridCell>();
     private Vector3 origin;
@@ -93,6 +97,9 @@ public class GridManager : MonoBehaviour
                 {
                     dstarPathfinder.UpdateEdge(position);
                 }
+
+                // Trigger the OnGridChanged event
+                OnGridChanged?.Invoke(position);
             }
         }
     }
