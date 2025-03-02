@@ -67,16 +67,25 @@ public class DStarPathfinder
     private void ComputeShortestPath()
     {
         Debug.Log("Computing shortest path...");
-        while (!openList.IsEmpty() && (gScore[start] != rhs[start]))
+        while (!openList.IsEmpty())
         {
             Vector2Int current = openList.Dequeue();
             Debug.Log($"Processing cell {current}: gScore = {gScore[current]}, rhs = {rhs[current]}");
 
+            // If the start node is consistent, we're done
+            if (current == start && gScore[start] == rhs[start])
+            {
+                Debug.Log("Start node is consistent. Pathfinding complete.");
+                break;
+            }
+
+            // If the node is overconsistent (gScore > rhs), update its gScore
             if (gScore[current] > rhs[current])
             {
                 gScore[current] = rhs[current];
                 Debug.Log($"Updated gScore[{current}] = {gScore[current]}");
             }
+            // If the node is underconsistent (gScore < rhs), reset its gScore and update its rhs
             else
             {
                 gScore[current] = float.MaxValue;
@@ -84,6 +93,7 @@ public class DStarPathfinder
                 UpdateVertex(current);
             }
 
+            // Update all neighbors
             foreach (GridCell neighbor in gridManager.GetNeighbors(current))
             {
                 Debug.Log($"Updating vertex at neighbor {neighbor.gridPos}");
@@ -95,17 +105,39 @@ public class DStarPathfinder
     private void UpdateVertex(Vector2Int pos)
     {
         Debug.Log($"Updating vertex at {pos}");
+
+        // Skip if the cell is a wall or doesn't exist
+        if (!gridManager.IsWalkable(pos))
+        {
+            Debug.Log($"Cell {pos} is a wall or doesn't exist. Skipping.");
+            return;
+        }
+
         if (pos != goal)
         {
             float minCost = float.MaxValue;
             foreach (GridCell neighbor in gridManager.GetNeighbors(pos))
             {
-                float cost = gScore[neighbor.gridPos] + 1; // Assuming uniform cost of 1 for all edges
-                Debug.Log($"Checking neighbor {neighbor.gridPos}: cost = {cost}");
-                if (cost < minCost)
+                if (!gridManager.IsWalkable(neighbor.gridPos))
                 {
-                    minCost = cost;
-                    Debug.Log($"New minCost = {minCost} at {neighbor.gridPos}");
+                    Debug.Log($"Neighbor {neighbor.gridPos} is a wall or doesn't exist. Skipping.");
+                    continue;
+                }
+
+                // Ensure the neighbor exists in gScore
+                if (gScore.ContainsKey(neighbor.gridPos))
+                {
+                    float cost = gScore[neighbor.gridPos] + 1; // Assuming uniform cost of 1 for all edges
+                    Debug.Log($"Checking neighbor {neighbor.gridPos}: cost = {cost}");
+                    if (cost < minCost)
+                    {
+                        minCost = cost;
+                        Debug.Log($"New minCost = {minCost} at {neighbor.gridPos}");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"Neighbor {neighbor.gridPos} not found in gScore. Skipping.");
                 }
             }
             rhs[pos] = minCost;
@@ -141,12 +173,27 @@ public class DStarPathfinder
 
             foreach (GridCell neighbor in gridManager.GetNeighbors(current))
             {
-                //Debug.Log($"Checking neighbor {neighbor.gridPos}: gScore = {gScore[neighbor.gridPos]}");
-                if (gScore.ContainsKey(neighbor.gridPos) && gScore[neighbor.gridPos] < minCost)
+                // Skip if the neighbor is a wall or doesn't exist
+                if (!gridManager.IsWalkable(neighbor.gridPos))
                 {
-                    minCost = gScore[neighbor.gridPos];
-                    nextStep = neighbor.gridPos;
-                    Debug.Log($"New best neighbor {neighbor.gridPos} with gScore = {minCost}");
+                    Debug.Log($"Neighbor {neighbor.gridPos} is a wall or doesn't exist. Skipping.");
+                    continue;
+                }
+
+                // Ensure the neighbor exists in gScore
+                if (gScore.ContainsKey(neighbor.gridPos))
+                {
+                    Debug.Log($"Checking neighbor {neighbor.gridPos}: gScore = {gScore[neighbor.gridPos]}");
+                    if (gScore[neighbor.gridPos] < minCost)
+                    {
+                        minCost = gScore[neighbor.gridPos];
+                        nextStep = neighbor.gridPos;
+                        Debug.Log($"New best neighbor {neighbor.gridPos} with gScore = {minCost}");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"Neighbor {neighbor.gridPos} not found in gScore. Skipping.");
                 }
             }
 

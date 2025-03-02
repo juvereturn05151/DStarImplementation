@@ -104,9 +104,10 @@ public class GridManager : MonoBehaviour
         foreach (var direction in directions)
         {
             Vector2Int neighborPos = position + direction;
-            if (grid.TryGetValue(neighborPos, out GridCell neighborCell))
+            GridCell neighbor = GetCell(neighborPos);
+            if (neighbor != null && neighbor.cellType == CellType.Walkable)
             {
-                neighbors.Add(neighborCell);
+                neighbors.Add(neighbor);
             }
         }
 
