@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-enum PathfindingMode 
+public enum PathfindingMode 
 {
     AStar,
     DStar
@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     private PathfindingMode pathfindingMode;
+    public PathfindingMode PathfindingMode => pathfindingMode;
 
     private GridManager gridManager;
     private Vector2Int playerPosition;
@@ -30,8 +31,6 @@ public class PlayerController : MonoBehaviour
         playerPosition = new Vector2Int(1, 1); // Default starting position
         PlacePlayerAtStart();
 
-        //pathfindingMode = PathfindingMode.AStar;
-        pathfindingMode = PathfindingMode.DStar;
         gridManager.SetDStarPathfinder(dstarPathfinder);
 
         // Subscribe to grid changes
@@ -47,6 +46,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Public method to set the pathfinding mode
+    public void SetPathfindingMode(PathfindingMode mode)
+    {
+        pathfindingMode = mode;
+        CalculateNewPath(); // Recompute the path when the mode changes
+    }
 
     void PlacePlayerAtStart()
     {
