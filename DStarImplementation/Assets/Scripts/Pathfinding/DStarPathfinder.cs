@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class DStarPathfinder
 {
@@ -48,13 +49,11 @@ public class DStarPathfinder
 
     public void UpdateEdge(Vector2Int pos)
     {
-        Debug.Log($"Updating edge at {pos}");
         GridCell cell = gridManager.GetCell(pos);
         if (cell != null && cell.cellType == CellType.Walkable)
         {
             foreach (GridCell neighbor in gridManager.GetNeighbors(pos))
             {
-                Debug.Log($"Updating vertex at neighbor {neighbor.gridPos}");
                 UpdateRhs(neighbor.gridPos);
             }
             ComputeShortestPath();
@@ -72,7 +71,6 @@ public class DStarPathfinder
             {
                 break;
             }
-
             // A node is in Lower State
             // If the node is overconsistent (gScore > rhs), update its gScore
             if (gScore[current] > rhs[current])
@@ -90,6 +88,10 @@ public class DStarPathfinder
             // Update all neighbors
             foreach (GridCell neighbor in gridManager.GetNeighbors(current))
             {
+                if (!gridManager.IsWalkable(neighbor.gridPos))
+                {
+                    continue;
+                }
                 UpdateRhs(neighbor.gridPos);
             }
         }
@@ -118,7 +120,6 @@ public class DStarPathfinder
                 {
                     //assuming uniform cost of 1 for all edges
                     float cost = gScore[neighbor.gridPos] + 1;
-
                     if (cost < minCost)
                     {
                         minCost = cost;
@@ -137,6 +138,7 @@ public class DStarPathfinder
         if (gScore[pos] != rhs[pos])
         {
             float fcost = Mathf.Min(gScore[pos], rhs[pos]) + Heuristic(pos, start);
+            //Debug.Log("fcost" + fcost);
             openList.Enqueue(pos, fcost);
         }
     }
@@ -198,7 +200,7 @@ public class DStarPathfinder
     private float Heuristic(Vector2Int a, Vector2Int b)
     {
         float h = Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
-        Debug.Log($"Heuristic from {a} to {b} = {h}");
+       // Debug.Log($"Heuristic from {a} to {b} = {h}");
         return h;
     }
 }
