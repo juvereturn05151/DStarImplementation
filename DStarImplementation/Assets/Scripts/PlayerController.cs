@@ -91,6 +91,12 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator MoveAlongPath()
     {
+        if (currentPath == null || currentPath.Count == 0)
+        {
+            Debug.Log("No valid path. Player will not move.");
+            yield break; // Exit if the path is empty
+        }
+
         isMoving = true;
 
         foreach (Vector2Int step in currentPath)

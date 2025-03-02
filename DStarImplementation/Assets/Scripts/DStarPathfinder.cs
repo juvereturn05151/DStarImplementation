@@ -45,7 +45,14 @@ public class DStarPathfinder
         ComputeShortestPath();
 
         List<Vector2Int> path = ReconstructPath();
-        Debug.Log($"Reconstructed path: {string.Join(" -> ", path)}");
+        if (path.Count == 0)
+        {
+            Debug.Log("No valid path found. Returning empty path.");
+        }
+        else
+        {
+            Debug.Log($"Reconstructed path: {string.Join(" -> ", path)}");
+        }
         return path;
     }
 
@@ -168,6 +175,7 @@ public class DStarPathfinder
         {
             path.Add(current);
             Debug.Log($"Added {current} to path");
+
             Vector2Int nextStep = current;
             float minCost = float.MaxValue;
 
@@ -205,8 +213,18 @@ public class DStarPathfinder
             current = nextStep;
         }
 
-        path.Add(goal);
-        Debug.Log($"Added goal {goal} to path");
+        // Add the goal to the path only if the path is valid
+        if (current == goal)
+        {
+            path.Add(goal);
+            Debug.Log($"Added goal {goal} to path");
+        }
+        else
+        {
+            Debug.Log("No valid path found. Returning empty path.");
+            return new List<Vector2Int>(); // Return empty path if the goal was not reached
+        }
+
         return path;
     }
 
