@@ -78,4 +78,28 @@ public class GridCell : MonoBehaviour
             textField.text = value == float.MaxValue ? "infi" : value.ToString("F1");
         }
     }
+
+    public void SetCosts(float gCost, float hCost, float fCost)
+    {
+        GCost = gCost;
+        HCost = hCost;
+        FCost = fCost;
+        UpdateCostText();
+    }
+
+    private void UpdateCostText()
+    {
+        if (gCostText != null)
+        {
+            gCostText.text = GCost == float.MaxValue ? "infi" : GCost.ToString("F1");
+        }
+        if (hCostText != null)
+        {
+            hCostText.text = HCost == float.MaxValue ? "infi" : HCost.ToString("F1");
+        }
+        if (fCostText != null)
+        {
+            fCostText.text = FCost == float.MaxValue ? "infi" : FCost.ToString("F1");
+        }
+    }
 }

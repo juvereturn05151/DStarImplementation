@@ -1,8 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class DStarPathfinder
 {
@@ -29,14 +26,15 @@ public class DStarPathfinder
         rhs.Clear();
         openList.Clear();
 
-        //initialize gScore and rhs for all walkable cells
+        // Initialize gScore and rhs for all walkable cells
         foreach (GridCell cell in gridManager.GetAllWalkableCells())
         {
             gScore[cell.gridPos] = float.MaxValue;
             rhs[cell.gridPos] = float.MaxValue;
+            cell.SetCosts(float.MaxValue, float.MaxValue, float.MaxValue); // Reset cell costs
         }
 
-        //set rhs of the goal to 0 and add it to the open list
+        // Set rhs of the goal to 0 and add it to the open list
         rhs[goal] = 0;
         openList.Enqueue(goal, Heuristic(goal, start));
 
@@ -71,14 +69,13 @@ public class DStarPathfinder
             {
                 break;
             }
+
             // A node is in Lower State
-            // If the node is overconsistent (gScore > rhs), update its gScore
             if (gScore[current] > rhs[current])
             {
                 gScore[current] = rhs[current];
             }
-            //A node is in Raise State
-            // If the node is underconsistent (gScore < rhs), reset its gScore and update its rhs
+            // A node is in Raise State
             else if (gScore[current] < rhs[current])
             {
                 gScore[current] = float.MaxValue;
@@ -99,7 +96,7 @@ public class DStarPathfinder
 
     private void UpdateRhs(Vector2Int pos)
     {
-        //skip if the cell is a wall or doesn't exist
+        // Skip if the cell is a wall or doesn't exist
         if (!gridManager.IsWalkable(pos))
         {
             return;
@@ -115,11 +112,10 @@ public class DStarPathfinder
                     continue;
                 }
 
-                //ensure the neighbor exists in gScore
+                // Ensure the neighbor exists in gScore
                 if (gScore.ContainsKey(neighbor.gridPos))
                 {
-                    //assuming uniform cost of 1 for all edges
-                    float cost = gScore[neighbor.gridPos] + 1;
+                    float cost = gScore[neighbor.gridPos] + 1; // Assuming uniform cost
                     if (cost < minCost)
                     {
                         minCost = cost;
@@ -138,8 +134,14 @@ public class DStarPathfinder
         if (gScore[pos] != rhs[pos])
         {
             float fcost = Mathf.Min(gScore[pos], rhs[pos]) + Heuristic(pos, start);
-            //Debug.Log("fcost" + fcost);
             openList.Enqueue(pos, fcost);
+        }
+
+        // Update the GridCell with the new costs
+        GridCell cell = gridManager.GetCell(pos);
+        if (cell != null)
+        {
+            cell.SetCosts(gScore[pos], rhs[pos], Mathf.Min(gScore[pos], rhs[pos]) + Heuristic(pos, start));
         }
     }
 
@@ -157,13 +159,11 @@ public class DStarPathfinder
 
             foreach (GridCell neighbor in gridManager.GetNeighbors(current))
             {
-                //skip if the neighbor is a wall or doesn't exist
                 if (!gridManager.IsWalkable(neighbor.gridPos))
                 {
                     continue;
                 }
 
-                //ensure the neighbor exists in gScore
                 if (gScore.ContainsKey(neighbor.gridPos))
                 {
                     if (gScore[neighbor.gridPos] < minCost)
@@ -174,33 +174,31 @@ public class DStarPathfinder
                 }
             }
 
-            if (nextStep == current) 
+            if (nextStep == current)
             {
                 Debug.Log("No path found: nextStep == current");
                 break;
-            } 
+            }
             current = nextStep;
         }
 
-        //add the goal to the path only if the path is valid
+        // Add the goal to the path only if the path is valid
         if (current == goal)
         {
             path.Add(goal);
         }
-        //return empty path if the goal was not reached
+        // Return empty path if the goal was not reached
         else
         {
-            return new List<Vector2Int>(); 
+            return new List<Vector2Int>();
         }
 
         return path;
     }
 
-    //Manhattan
+    // Manhattan heuristic
     private float Heuristic(Vector2Int a, Vector2Int b)
     {
-        float h = Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
-       // Debug.Log($"Heuristic from {a} to {b} = {h}");
-        return h;
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
     }
 }
