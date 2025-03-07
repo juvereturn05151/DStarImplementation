@@ -172,4 +172,12 @@ public class GridManager : MonoBehaviour
         Debug.DrawRay(endPosition, arrowHeadDir1 * arrowHeadLength, Color.red, 2f);
         Debug.DrawRay(endPosition, arrowHeadDir2 * arrowHeadLength, Color.red, 2f);
     }
+
+    public void ResetAllGridPathfindingData()
+    {
+        foreach (var cell in grid.Values)
+        {
+            cell.ResetPathfindingData();
+        }
+    }
 }

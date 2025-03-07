@@ -99,6 +99,8 @@ public class PlayerController : MonoBehaviour
             StopCoroutine(movementCoroutine); // Stop current movement if a new path is needed
         }
 
+        gridManager.ResetAllGridPathfindingData();
+
         if (pathfindingMode == PathfindingMode.AStar)
         {
             currentPath = astarPathfinder.FindPath(playerPosition, goalPosition);

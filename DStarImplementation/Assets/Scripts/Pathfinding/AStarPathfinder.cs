@@ -36,8 +36,8 @@ public class AStarPathfinder
         openList.Add(startCell);
 
         // Debug: Color the start and target cells
-        gridManager.SetCellColor(start, Color.green); // Start cell
-        gridManager.SetCellColor(target, Color.red); // Target cell
+       // gridManager.SetCellColor(start, Color.green); // Start cell
+        //gridManager.SetCellColor(target, Color.red); // Target cell
 
         while (openList.Count > 0)
         {
@@ -57,7 +57,7 @@ public class AStarPathfinder
             closedList.Add(currentNode.gridPos);
 
             // Debug: Color the closed list cells yellow
-            gridManager.SetCellColor(currentNode.gridPos, Color.yellow);
+            //gridManager.SetCellColor(currentNode.gridPos, Color.yellow);
 
             // Evaluate each neighbor
             foreach (Vector2Int neighborPos in GetNeighbors(currentNode.gridPos))
@@ -82,7 +82,7 @@ public class AStarPathfinder
                     openList.Add(neighborCell);
 
                     // Debug: Color the open list cells blue
-                    gridManager.SetCellColor(neighborPos, Color.blue);
+                    //gridManager.SetCellColor(neighborPos, Color.blue);
                 }
                 else if (tentativeGCost < neighborCell.GCost)
                 {
