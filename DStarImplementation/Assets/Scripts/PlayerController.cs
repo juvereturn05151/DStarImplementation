@@ -86,7 +86,10 @@ public class PlayerController : MonoBehaviour
     private void HandleGridChanged(Vector2Int changedPosition)
     {
         Debug.Log($"Grid changed at {changedPosition}. Recomputing path...");
-        CalculateNewPath();
+        if (pathfindingMode == PathfindingMode.DStar)
+        {
+            CalculateNewPath();
+        }
     }
 
     private void CalculateNewPath()
