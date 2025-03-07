@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using TMPro;
 public enum CellType
 {
     Walkable,
@@ -11,14 +11,51 @@ public class GridCell : MonoBehaviour
     public Vector2Int gridPos;
     public CellType cellType;
 
-    // A* Pathfinding properties
-    // Cost from start to this node
-    public float gCost;
-    // Total cost (gCost + heuristic)
-    public float hCost;
-    public float fCost;
+    private float _gCost;
+    private float _hCost;
+    private float _fCost;
+
+    // Properties for costs
+    public float GCost
+    {
+        get => _gCost;
+        set
+        {
+            _gCost = value;
+            UpdateCostText(gCostText, _gCost);
+        }
+    }
+
+    public float HCost
+    {
+        get => _hCost;
+        set
+        {
+            _hCost = value;
+            UpdateCostText(hCostText, _hCost);
+        }
+    }
+
+    public float FCost
+    {
+        get => _fCost;
+        set
+        {
+            _fCost = value;
+            UpdateCostText(fCostText, _fCost);
+        }
+    }
     // Parent node for path reconstruction
-    public GridCell parent; 
+    public GridCell parent;
+
+    [SerializeField]
+    private TextMeshProUGUI gCostText;
+
+    [SerializeField]
+    private TextMeshProUGUI hCostText;
+
+    [SerializeField]
+    private TextMeshProUGUI fCostText;
 
     public void Initialize(Vector2Int position, CellType type)
     {
@@ -29,8 +66,16 @@ public class GridCell : MonoBehaviour
 
     public void ResetPathfindingData()
     {
-        gCost = float.MaxValue;
-        fCost = float.MaxValue;
+        GCost = float.MaxValue;
+        FCost = float.MaxValue;
         parent = null;
+    }
+
+    private void UpdateCostText(TextMeshProUGUI textField, float value)
+    {
+        if (textField != null)
+        {
+            textField.text = value == float.MaxValue ? "infi" : value.ToString("F1");
+        }
     }
 }

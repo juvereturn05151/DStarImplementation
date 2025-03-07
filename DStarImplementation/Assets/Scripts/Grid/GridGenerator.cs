@@ -12,9 +12,9 @@ public class GridGenerator : MonoBehaviour
     [SerializeField]
     private float spacing = 1.1f;
     [SerializeField]
-    private GameObject walkablePrefab;
+    private GridCell walkablePrefab;
     [SerializeField]
-    private GameObject wallPrefab;
+    private GridCell wallPrefab;
     [SerializeField]
     private string mapFilePath = "Assets/map.txt";
     [SerializeField]
@@ -70,12 +70,12 @@ public class GridGenerator : MonoBehaviour
 
                 if (tile == 'W') // Wall
                 {
-                    cell = Instantiate(wallPrefab, position, Quaternion.identity, gridManager.transform);
+                    cell = Instantiate(wallPrefab.gameObject, position, Quaternion.identity, gridManager.transform);
                     cell.tag = "Wall";
                 }
                 else if (tile == 'O') // Walkable area
                 {
-                    cell = Instantiate(walkablePrefab, position, Quaternion.identity, gridManager.transform);
+                    cell = Instantiate(walkablePrefab.gameObject, position, Quaternion.identity, gridManager.transform) ;
                     cell.tag = "Walkable";
                     cellType = CellType.Walkable;
                 }
@@ -83,7 +83,7 @@ public class GridGenerator : MonoBehaviour
                 if (cell != null)
                 {
                     cell.name = $"Cell_{x}_{y}";
-                    GridCell gridCell = cell.AddComponent<GridCell>();
+                    GridCell gridCell = cell.GetComponent<GridCell>();
                     gridCell.Initialize(gridPos, cellType);
                     gridManager.AddCell(gridPos, gridCell);
                 }

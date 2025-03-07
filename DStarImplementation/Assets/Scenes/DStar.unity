@@ -428,8 +428,8 @@ MonoBehaviour:
   width: 10
   height: 10
   spacing: 1
-  walkablePrefab: {fileID: 8888257536943192887, guid: d66205b1955fb5e428a159b0c8886f37, type: 3}
-  wallPrefab: {fileID: 1824396636461255585, guid: b42c9596f0279f04ca8d4b44b6fe22aa, type: 3}
+  walkablePrefab: {fileID: 6983653230533335112, guid: d66205b1955fb5e428a159b0c8886f37, type: 3}
+  wallPrefab: {fileID: 207741369738717406, guid: b42c9596f0279f04ca8d4b44b6fe22aa, type: 3}
   mapFilePath: Assets/map.txt
   playerController: {fileID: 349541461}
   gridManager: {fileID: 48289534}

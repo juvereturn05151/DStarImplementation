@@ -30,9 +30,9 @@ public class AStarPathfinder
 
         // Initialize start node
         startCell.ResetPathfindingData();
-        startCell.gCost = 0;
-        startCell.hCost = Heuristic(start, target);
-        startCell.fCost = startCell.gCost + startCell.hCost;
+        startCell.GCost = 0;
+        startCell.HCost = Heuristic(start, target);
+        startCell.FCost = startCell.GCost + startCell.HCost;
         openList.Add(startCell);
 
         // Debug: Color the start and target cells
@@ -69,25 +69,25 @@ public class AStarPathfinder
                 if (closedList.Contains(neighborPos)) continue;
 
                 // Calculate tentative gCost (cost from start to neighbor)
-                float tentativeGCost = currentNode.gCost + 1; // Assuming each step has a cost of 1
+                float tentativeGCost = currentNode.GCost + 1; // Assuming each step has a cost of 1
 
                 // Check if the neighbor is already in the open list
                 if (!openList.Contains(neighborCell))
                 {
                     // If not in the open list, add it
-                    neighborCell.gCost = tentativeGCost;
-                    neighborCell.fCost = tentativeGCost + Heuristic(neighborPos, target);
+                    neighborCell.GCost = tentativeGCost;
+                    neighborCell.FCost = tentativeGCost + Heuristic(neighborPos, target);
                     neighborCell.parent = currentNode;
                     openList.Add(neighborCell);
 
                     // Debug: Color the open list cells blue
                     gridManager.SetCellColor(neighborPos, Color.blue);
                 }
-                else if (tentativeGCost < neighborCell.gCost)
+                else if (tentativeGCost < neighborCell.GCost)
                 {
                     // If in the open list and the new gCost is lower, update the node
-                    neighborCell.gCost = tentativeGCost;
-                    neighborCell.fCost = tentativeGCost + Heuristic(neighborPos, target);
+                    neighborCell.GCost = tentativeGCost;
+                    neighborCell.FCost = tentativeGCost + Heuristic(neighborPos, target);
                     neighborCell.parent = currentNode;
                 }
             }
@@ -124,7 +124,7 @@ public class AStarPathfinder
         GridCell lowestNode = openList[0];
         foreach (GridCell node in openList)
         {
-            if (node.fCost < lowestNode.fCost)
+            if (node.FCost < lowestNode.FCost)
             {
                 lowestNode = node;
             }
