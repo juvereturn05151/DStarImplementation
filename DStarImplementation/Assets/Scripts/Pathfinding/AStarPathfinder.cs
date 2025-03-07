@@ -76,7 +76,8 @@ public class AStarPathfinder
                 {
                     // If not in the open list, add it
                     neighborCell.GCost = tentativeGCost;
-                    neighborCell.FCost = tentativeGCost + Heuristic(neighborPos, target);
+                    neighborCell.HCost = Heuristic(neighborPos, target);
+                    neighborCell.FCost = tentativeGCost + neighborCell.HCost;
                     neighborCell.parent = currentNode;
                     openList.Add(neighborCell);
 
@@ -87,7 +88,8 @@ public class AStarPathfinder
                 {
                     // If in the open list and the new gCost is lower, update the node
                     neighborCell.GCost = tentativeGCost;
-                    neighborCell.FCost = tentativeGCost + Heuristic(neighborPos, target);
+                    neighborCell.HCost = Heuristic(neighborPos, target);
+                    neighborCell.FCost = tentativeGCost + neighborCell.HCost;
                     neighborCell.parent = currentNode;
                 }
             }
