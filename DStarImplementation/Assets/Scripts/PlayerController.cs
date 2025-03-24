@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleGridChanged(Vector2Int changedPosition)
     {
-        Debug.Log($"Grid changed at {changedPosition}. Recomputing path...");
+
         if (pathfindingMode == PathfindingMode.DStar)
         {
             // Only update the affected edge in D*
@@ -151,13 +151,6 @@ public class PlayerController : MonoBehaviour
 
         foreach (Vector2Int step in currentPath)
         {
-            //if (!gridManager.IsWalkable(step)) // Check if the path is still valid
-            //{
-            //    Debug.Log("Path blocked! Recalculating...");
-            //    CalculateNewPath();
-            //    yield break;
-            //}
-
             Vector3 targetPosition = gridManager.GetWorldPosition(step);
             while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
             {
@@ -166,6 +159,8 @@ public class PlayerController : MonoBehaviour
             }
             playerPosition = step; // Update player's grid position
         }
+
+        currentPath.Clear();
 
         isMoving = false;
     }
