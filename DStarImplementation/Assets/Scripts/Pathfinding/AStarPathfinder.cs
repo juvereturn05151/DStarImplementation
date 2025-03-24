@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class AStarPathfinder
 {
@@ -16,9 +17,13 @@ public class AStarPathfinder
         var openList = new List<GridCell>();
         var closedList = new HashSet<Vector2Int>();
 
+        gridManager.ResetCellColors(); // Reset colors after pathfinding
+
         // Get the start and target cells
         GridCell startCell = gridManager.GetCell(start);
+        startCell.SetCellColor(Color.yellow);
         GridCell targetCell = gridManager.GetCell(target);
+        targetCell.SetCellColor(Color.yellow);
 
         if (startCell == null || targetCell == null)
         {
@@ -26,7 +31,7 @@ public class AStarPathfinder
             return null;
         }
 
-        gridManager.ResetCellColors(); // Reset colors after pathfinding
+
 
         // Initialize start node
         startCell.ResetPathfindingData();
@@ -55,7 +60,7 @@ public class AStarPathfinder
             // Move the current node from the open list to the closed list
             openList.Remove(currentNode);
             closedList.Add(currentNode.gridPos);
-
+            gridManager.SetCellColor(currentNode.gridPos, Color.blue);
             // Debug: Color the closed list cells yellow
             //gridManager.SetCellColor(currentNode.gridPos, Color.yellow);
 
@@ -80,7 +85,7 @@ public class AStarPathfinder
                     neighborCell.FCost = tentativeGCost + neighborCell.HCost;
                     neighborCell.parent = currentNode;
                     openList.Add(neighborCell);
-
+                    gridManager.SetCellColor(currentNode.gridPos, Color.green);
                     // Debug: Color the open list cells blue
                     //gridManager.SetCellColor(neighborPos, Color.blue);
                 }

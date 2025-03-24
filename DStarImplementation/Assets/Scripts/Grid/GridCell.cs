@@ -88,6 +88,11 @@ public class GridCell : MonoBehaviour
         UpdateCostText();
     }
 
+    public void SetCellColor(Color color)
+    {
+        GetComponent<SpriteRenderer>().color = color;
+    }
+
     private void UpdateCostText()
     {
         if (gCostText != null)

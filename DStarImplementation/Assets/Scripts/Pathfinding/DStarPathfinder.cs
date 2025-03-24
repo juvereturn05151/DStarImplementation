@@ -29,6 +29,11 @@ public class DStarPathfinder
         rhs.Clear();
         openList.Clear();
 
+        gridManager.ResetCellColors(); // Reset colors after pathfinding
+
+        gridManager.SetCellColor(start, Color.yellow);
+        gridManager.SetCellColor(goal, Color.yellow);
+
         // Initialize gScore and rhs for all walkable cells
         foreach (GridCell cell in gridManager.GetAllWalkableCells())
         {
@@ -137,6 +142,8 @@ public class DStarPathfinder
         {
             float fcost = Mathf.Min(gScore[pos], rhs[pos]) + Heuristic(pos, start);
             openList.Enqueue(pos, fcost);
+
+            gridManager.SetCellColor(pos, Color.green);
         }
 
         // Update the GridCell with the new costs

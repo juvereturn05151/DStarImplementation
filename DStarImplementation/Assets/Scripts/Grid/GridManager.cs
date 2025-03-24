@@ -57,7 +57,11 @@ public class GridManager : MonoBehaviour
     {
         if (grid.TryGetValue(position, out GridCell cell))
         {
-            cell.GetComponent<SpriteRenderer>().color = color;
+            if (cell.cellType == CellType.Walkable)
+            {
+                cell.GetComponent<SpriteRenderer>().color = color;
+            }
+
         }
     }
 
@@ -67,7 +71,7 @@ public class GridManager : MonoBehaviour
         {
             if (cell.cellType == CellType.Walkable) 
             {
-                cell.GetComponent<SpriteRenderer>().color = Color.white; // Reset to default color
+                cell.GetComponent<SpriteRenderer>().color = Color.white; 
             }
         }
     }
