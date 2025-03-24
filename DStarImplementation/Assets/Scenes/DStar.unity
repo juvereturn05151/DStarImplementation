@@ -386,6 +386,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7830318539115819609, guid: ee9410e2a940ded47a64fa24bbd10b5b, type: 3}
+      propertyPath: performanceText
+      value: 
+      objectReference: {fileID: 595164021}
     - target: {fileID: 9110237942847149408, guid: ee9410e2a940ded47a64fa24bbd10b5b, type: 3}
       propertyPath: m_Name
       value: Player
@@ -395,6 +399,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ee9410e2a940ded47a64fa24bbd10b5b, type: 3}
+--- !u!114 &595164021 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2505042385387888570, guid: 7045ccb813edfc549b90c417bf81ece9, type: 3}
+  m_PrefabInstance: {fileID: 4947685335830908904}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &654806377
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,33 +561,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 400064604}
     - target: {fileID: 4085323779139751752, guid: 7045ccb813edfc549b90c417bf81ece9, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4085323779139751752, guid: 7045ccb813edfc549b90c417bf81ece9, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4085323779139751752, guid: 7045ccb813edfc549b90c417bf81ece9, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 48289534}
-    - target: {fileID: 4085323779139751752, guid: 7045ccb813edfc549b90c417bf81ece9, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4085323779139751752, guid: 7045ccb813edfc549b90c417bf81ece9, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ResetAllGridPathfindingData
-      objectReference: {fileID: 0}
-    - target: {fileID: 4085323779139751752, guid: 7045ccb813edfc549b90c417bf81ece9, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: GridManager, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 4085323779139751752, guid: 7045ccb813edfc549b90c417bf81ece9, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 6736944024183740845, guid: 7045ccb813edfc549b90c417bf81ece9, type: 3}
       propertyPath: m_Pivot.x
       value: 0

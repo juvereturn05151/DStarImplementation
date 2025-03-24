@@ -8,7 +8,6 @@ public class DStarPathfinder
     private Dictionary<Vector2Int, float> rhs;
     private PriorityQueue<Vector2Int> openList;
     private Vector2Int start;
-    private Vector2Int goal;
     public Vector2Int Goal { get; private set; }
     public bool IsInitialized => Goal != default;
 
@@ -24,7 +23,7 @@ public class DStarPathfinder
     public List<Vector2Int> FindPath(Vector2Int start, Vector2Int goal)
     {
         this.start = start;
-        this.goal = goal;
+        this.Goal = goal;
         gScore.Clear();
         rhs.Clear();
         openList.Clear();
@@ -53,14 +52,32 @@ public class DStarPathfinder
         return path;
     }
 
-    public void UpdateEdge(Vector2Int pos)
+    public void UpdateEdge(Vector2Int changedPos)
     {
         if (!IsInitialized) return;
 
-        // Only process if the changed cell affects the path
-        if (gridManager.IsWalkable(pos))
+        // Always process changed walkable cells
+        if (gridManager.IsWalkable(changedPos))
         {
-            UpdateRhs(pos);
+            // Force full update of this cell and its neighbors
+            UpdateRhs(changedPos);
+            foreach (var neighbor in gridManager.GetNeighbors(changedPos))
+            {
+                UpdateRhs(neighbor.gridPos);
+            }
+            ComputeShortestPath();
+        }
+        else // If cell became blocked
+        {
+            // Invalidate all paths through this cell
+            gScore[changedPos] = float.MaxValue;
+            rhs[changedPos] = float.MaxValue;
+
+            // Update all neighbors that might have used this cell
+            foreach (var neighbor in gridManager.GetNeighbors(changedPos))
+            {
+                UpdateRhs(neighbor.gridPos);
+            }
             ComputeShortestPath();
         }
     }
@@ -109,7 +126,7 @@ public class DStarPathfinder
             return;
         }
 
-        if (pos != goal)
+        if (pos != Goal)
         {
             float minCost = float.MaxValue;
             foreach (GridCell neighbor in gridManager.GetNeighbors(pos))
@@ -163,7 +180,7 @@ public class DStarPathfinder
             return FindPath(start, goal);
         }
 
-        // Reuse existing g/rhs values
+        this.start = start;
         return ReconstructPath();
     }
 
@@ -172,50 +189,49 @@ public class DStarPathfinder
         List<Vector2Int> path = new List<Vector2Int>();
         Vector2Int current = start;
 
-        while (current != goal)
+        int safetyCounter = 0;
+        int maxSteps = 1000;
+
+        while (current != Goal && safetyCounter++ < maxSteps)
         {
             path.Add(current);
 
-            Vector2Int nextStep = current;
-            float minCost = float.MaxValue;
+            Vector2Int bestNeighbor = current;
+            float lowestCost = float.MaxValue;
 
             foreach (GridCell neighbor in gridManager.GetNeighbors(current))
             {
-                if (!gridManager.IsWalkable(neighbor.gridPos))
-                {
-                    continue;
-                }
+                if (!gridManager.IsWalkable(neighbor.gridPos)) continue;
 
-                if (gScore.ContainsKey(neighbor.gridPos))
+                if (gScore.TryGetValue(neighbor.gridPos, out float cost))
                 {
-                    if (gScore[neighbor.gridPos] < minCost)
+                    if (cost < lowestCost)
                     {
-                        minCost = gScore[neighbor.gridPos];
-                        nextStep = neighbor.gridPos;
+                        lowestCost = cost;
+                        bestNeighbor = neighbor.gridPos;
                     }
                 }
             }
 
-            if (nextStep == current)
+            if (bestNeighbor == current)
             {
-                Debug.Log("No path found: nextStep == current");
-                break;
+                Debug.LogWarning("No valid path forward - attempting recovery");
+                UpdateRhs(current);
+                ComputeShortestPath();
+                continue;
             }
-            current = nextStep;
+
+            current = bestNeighbor;
         }
 
-        // Add the goal to the path only if the path is valid
-        if (current == goal)
+        if (current == Goal)
         {
-            path.Add(goal);
-        }
-        // Return empty path if the goal was not reached
-        else
-        {
-            return new List<Vector2Int>();
+            path.Add(Goal);
+            return path;
         }
 
-        return path;
+        Debug.LogError("Path reconstruction failed");
+        return new List<Vector2Int>();
     }
 
     // Manhattan heuristic

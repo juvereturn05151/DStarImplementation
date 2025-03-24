@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public enum PathfindingMode 
@@ -14,6 +15,9 @@ public class PlayerController : MonoBehaviour
     private PathfindingMode pathfindingMode;
     public PathfindingMode PathfindingMode => pathfindingMode;
 
+    [SerializeField]
+    private TextMeshProUGUI performanceText;
+
     private GridManager gridManager;
     private Vector2Int playerPosition;
     private Vector2Int goalPosition;
@@ -22,6 +26,10 @@ public class PlayerController : MonoBehaviour
     private AStarPathfinder astarPathfinder;
     private DStarPathfinder dstarPathfinder;
     private Coroutine movementCoroutine;
+
+    private float astarLastComputeTime;
+    private float dstarLastUpdateTime;
+    private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
     public void SetGridManager(GridManager manager)
     {
@@ -69,6 +77,9 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && !isMoving)
         {
+            astarLastComputeTime = 0.0f;
+            dstarLastUpdateTime = 0.0f;
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, Vector2.zero);
             if (hit.collider != null)
@@ -81,6 +92,8 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+
+        UpdatePerformanceDisplay();
     }
 
     private void HandleGridChanged(Vector2Int changedPosition)
@@ -88,11 +101,16 @@ public class PlayerController : MonoBehaviour
 
         if (pathfindingMode == PathfindingMode.DStar)
         {
+            stopwatch.Restart();
             // Only update the affected edge in D*
             dstarPathfinder.UpdateEdge(changedPosition);
 
             // Reconstruct path from existing D* data
             currentPath = dstarPathfinder.ReconstructPath(playerPosition, goalPosition);
+
+            stopwatch.Stop();
+            dstarLastUpdateTime += stopwatch.ElapsedMilliseconds;
+
             gridManager.DrawPathArrows(currentPath);
 
             // If currently moving, restart movement with the updated path
@@ -112,14 +130,19 @@ public class PlayerController : MonoBehaviour
             StopCoroutine(movementCoroutine); // Stop current movement if a new path is needed
         }
 
-        gridManager.ResetAllGridPathfindingData();
+
 
         if (pathfindingMode == PathfindingMode.AStar)
         {
+            stopwatch.Restart(); 
+            gridManager.ResetAllGridPathfindingData();
             currentPath = astarPathfinder.FindPath(playerPosition, goalPosition);
+            stopwatch.Stop();
+            astarLastComputeTime += stopwatch.ElapsedMilliseconds;
         }
         else 
         {
+            stopwatch.Restart();
             // First-time planning or goal change requires full initialization
             if (dstarPathfinder.Goal != goalPosition || !dstarPathfinder.IsInitialized)
             {
@@ -130,6 +153,8 @@ public class PlayerController : MonoBehaviour
                 // Subsequent updates use incremental reconstruction
                 currentPath = dstarPathfinder.ReconstructPath(playerPosition, goalPosition);
             }
+            stopwatch.Stop();
+            dstarLastUpdateTime += stopwatch.ElapsedMilliseconds;
         }
 
         if (currentPath != null && currentPath.Count > 0)
@@ -164,4 +189,19 @@ public class PlayerController : MonoBehaviour
 
         isMoving = false;
     }
+
+    private void UpdatePerformanceDisplay()
+    {
+        performanceText.text = $"A*: {astarLastComputeTime}ms\nD*: {dstarLastUpdateTime}ms";
+
+        // Auto-hide after 3 seconds
+        //StartCoroutine(HidePerformanceText());
+    }
+
+    private IEnumerator HidePerformanceText()
+    {
+        yield return new WaitForSeconds(3f);
+        performanceText.text = "";
+    }
 }
+
