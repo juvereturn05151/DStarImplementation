@@ -88,6 +88,19 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"Grid changed at {changedPosition}. Recomputing path...");
         if (pathfindingMode == PathfindingMode.DStar)
         {
+            // Only update the affected edge in D*
+            dstarPathfinder.UpdateEdge(changedPosition);
+
+            // Reconstruct path from existing D* data
+            currentPath = dstarPathfinder.ReconstructPath(playerPosition, goalPosition);
+            gridManager.DrawPathArrows(currentPath);
+
+            // If currently moving, restart movement with the updated path
+            if (movementCoroutine != null) StopCoroutine(movementCoroutine);
+            movementCoroutine = StartCoroutine(MoveAlongPath());
+        }
+        else 
+        {
             CalculateNewPath();
         }
     }
@@ -107,7 +120,16 @@ public class PlayerController : MonoBehaviour
         }
         else 
         {
-            currentPath = dstarPathfinder.FindPath(playerPosition, goalPosition);
+            // First-time planning or goal change requires full initialization
+            if (dstarPathfinder.Goal != goalPosition || !dstarPathfinder.IsInitialized)
+            {
+                currentPath = dstarPathfinder.FindPath(playerPosition, goalPosition);
+            }
+            else
+            {
+                // Subsequent updates use incremental reconstruction
+                currentPath = dstarPathfinder.ReconstructPath(playerPosition, goalPosition);
+            }
         }
 
         if (currentPath != null && currentPath.Count > 0)

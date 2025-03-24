@@ -81,14 +81,6 @@ public class GridManager : MonoBehaviour
                 cell.cellType = CellType.Wall;
                 cell.GetComponent<SpriteRenderer>().color = Color.black; // Visual feedback for wall
                 walkableCells.Remove(cell);
-
-                if (dstarPathfinder != null)
-                {
-                    dstarPathfinder.UpdateEdge(position);
-                }
-
-                // Trigger the OnGridChanged event
-                OnGridChanged?.Invoke(position);
             }
             else
             {
@@ -96,14 +88,9 @@ public class GridManager : MonoBehaviour
                 cell.GetComponent<SpriteRenderer>().color = Color.white; // Visual feedback for walkable
                 walkableCells.Add(cell);
 
-                if (dstarPathfinder != null)
-                {
-                    dstarPathfinder.UpdateEdge(position);
-                }
-
-                // Trigger the OnGridChanged event
-                OnGridChanged?.Invoke(position);
             }
+
+            OnGridChanged?.Invoke(position);
         }
     }
 

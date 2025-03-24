@@ -9,6 +9,9 @@ public class DStarPathfinder
     private PriorityQueue<Vector2Int> openList;
     private Vector2Int start;
     private Vector2Int goal;
+    public Vector2Int Goal { get; private set; }
+    public bool IsInitialized => Goal != default;
+
 
     public DStarPathfinder(GridManager manager)
     {
@@ -47,13 +50,12 @@ public class DStarPathfinder
 
     public void UpdateEdge(Vector2Int pos)
     {
-        GridCell cell = gridManager.GetCell(pos);
-        if (cell != null && cell.cellType == CellType.Walkable)
+        if (!IsInitialized) return;
+
+        // Only process if the changed cell affects the path
+        if (gridManager.IsWalkable(pos))
         {
-            foreach (GridCell neighbor in gridManager.GetNeighbors(pos))
-            {
-                UpdateRhs(neighbor.gridPos);
-            }
+            UpdateRhs(pos);
             ComputeShortestPath();
         }
     }
@@ -143,6 +145,19 @@ public class DStarPathfinder
         {
             cell.SetCosts(gScore[pos], rhs[pos], Mathf.Min(gScore[pos], rhs[pos]) + Heuristic(pos, start));
         }
+    }
+
+    public List<Vector2Int> ReconstructPath(Vector2Int start, Vector2Int goal)
+    {
+        // Ensure the goal hasn't changed
+        if (goal != Goal)
+        {
+            Debug.LogWarning("D* goal changed - requiring full replan");
+            return FindPath(start, goal);
+        }
+
+        // Reuse existing g/rhs values
+        return ReconstructPath();
     }
 
     private List<Vector2Int> ReconstructPath()
