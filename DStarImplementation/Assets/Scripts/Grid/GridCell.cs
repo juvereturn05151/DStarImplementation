@@ -68,6 +68,7 @@ public class GridCell : MonoBehaviour
     {
         GCost = float.MaxValue;
         FCost = float.MaxValue;
+        HCost = 0;
         parent = null;
     }
 
