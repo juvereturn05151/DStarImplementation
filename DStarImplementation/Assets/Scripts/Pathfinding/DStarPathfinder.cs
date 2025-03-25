@@ -34,7 +34,7 @@ public class DStarPathfinder
         gridManager.SetCellColor(goal, Color.yellow);
 
         // Initialize gScore and rhs for all walkable cells
-        foreach (GridCell cell in gridManager.GetAllWalkableCells())
+        foreach (GridCell cell in gridManager.GetAllCells())
         {
             gScore[cell.gridPos] = float.MaxValue;
             rhs[cell.gridPos] = float.MaxValue;
@@ -56,30 +56,25 @@ public class DStarPathfinder
     {
         if (!IsInitialized) return;
 
-        // Always process changed walkable cells
+        //always process changed walkable cells
         if (gridManager.IsWalkable(changedPos))
         {
-            // Force full update of this cell and its neighbors
+            //force full update of this cell and its neighbors
             UpdateRhs(changedPos);
-            foreach (var neighbor in gridManager.GetNeighbors(changedPos))
-            {
-                UpdateRhs(neighbor.gridPos);
-            }
-            ComputeShortestPath();
         }
-        else // If cell became blocked
+        else //if cell became blocked
         {
-            // Invalidate all paths through this cell
+            //invalidate all paths through this cell
             gScore[changedPos] = float.MaxValue;
             rhs[changedPos] = float.MaxValue;
-
-            // Update all neighbors that might have used this cell
-            foreach (var neighbor in gridManager.GetNeighbors(changedPos))
-            {
-                UpdateRhs(neighbor.gridPos);
-            }
-            ComputeShortestPath();
         }
+
+        //update all neighbors that might have used this cell
+        foreach (var neighbor in gridManager.GetNeighbors(changedPos))
+        {
+            UpdateRhs(neighbor.gridPos);
+        }
+        ComputeShortestPath();
     }
 
     private void ComputeShortestPath()

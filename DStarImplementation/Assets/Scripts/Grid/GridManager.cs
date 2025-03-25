@@ -9,6 +9,7 @@ public class GridManager : MonoBehaviour
 
     private Dictionary<Vector2Int, GridCell> grid = new Dictionary<Vector2Int, GridCell>();
     private HashSet<GridCell> walkableCells = new HashSet<GridCell>();
+    private HashSet<GridCell> allCells = new HashSet<GridCell>();
     private Vector3 origin;
     private float spacing;
     private DStarPathfinder dstarPathfinder;
@@ -35,6 +36,8 @@ public class GridManager : MonoBehaviour
             {
                 walkableCells.Add(cell);
             }
+
+            allCells.Add(cell);
         }
     }
 
@@ -91,7 +94,6 @@ public class GridManager : MonoBehaviour
                 cell.cellType = CellType.Walkable;
                 cell.GetComponent<SpriteRenderer>().color = Color.white; // Visual feedback for walkable
                 walkableCells.Add(cell);
-
             }
 
             OnGridChanged?.Invoke(position);
@@ -102,6 +104,11 @@ public class GridManager : MonoBehaviour
     public List<GridCell> GetAllWalkableCells()
     {
         return new List<GridCell>(walkableCells); 
+    }
+
+    public List<GridCell> GetAllCells()
+    {
+        return new List<GridCell>(allCells);
     }
 
     public List<GridCell> GetNeighbors(Vector2Int position)
